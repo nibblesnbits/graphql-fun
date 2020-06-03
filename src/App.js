@@ -1,26 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { QueryRenderer } from "react-relay";
+import { graphql } from "babel-plugin-relay/macro";
+import environment from "./relay-environment";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default class App extends React.Component {
+  render() {
+    return (
+      <QueryRenderer
+        environment={environment}
+        query={graphql`
+          query AppQuery {
+            groups {
+              name
+              members {
+                firstName
+              }
+            }
+          }
+        `}
+        variables={{}}
+        render={({ error, props }) => {
+          if (error) {
+            return <div>Error!</div>;
+          }
+          if (!props) {
+            return <div>Loading...</div>;
+          }
+          return (
+            <div>
+              <ul>
+                {props.groups.map((g) => (
+                  <li key={g.name}>
+                    {g.name}:{" "}
+                    <ul>
+                      {g.members.map((m) => (
+                        <li key={m.firstName}>{m.firstName}</li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        }}
+      />
+    );
+  }
 }
-
-export default App;

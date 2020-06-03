@@ -1,0 +1,16 @@
+schema {
+  query: Query
+}
+
+type User {
+  firstName: String
+}
+type Group {
+  name: String
+  members: [User!]!
+}
+
+type Query {
+  users: [User!]!
+  groups: [Group!]!
+}
