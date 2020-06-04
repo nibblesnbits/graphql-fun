@@ -10,10 +10,10 @@
 import type { ConcreteRequest } from 'relay-runtime';
 export type AppQueryVariables = {||};
 export type AppQueryResponse = {|
-  +groups: $ReadOnlyArray<{|
-    +name: ?string,
+  +groups: ?$ReadOnlyArray<?{|
+    +name: string,
     +members: $ReadOnlyArray<{|
-      +firstName: ?string
+      +firstName: string
     |}>,
   |}>
 |};
@@ -55,7 +55,7 @@ var v0 = [
       {
         "alias": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "AppUser",
         "kind": "LinkedField",
         "name": "members",
         "plural": true,
@@ -81,7 +81,7 @@ return {
     "metadata": null,
     "name": "AppQuery",
     "selections": (v0/*: any*/),
-    "type": "Query"
+    "type": "RootQueryType"
   },
   "kind": "Request",
   "operation": {

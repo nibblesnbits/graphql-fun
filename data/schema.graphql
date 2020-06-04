@@ -4,26 +4,22 @@ schema {
 }
 
 type RootQueryType {
-  group(id: Int!): Group
   user(id: Int!): AppUser
-  users: [AppUser]
-  groups: [Group]
-  event(id: Int!): Event
+  users(page: Int, pageSize: Int = 10): [AppUser]
+  group(id: Int!): Group
+  groups(page: Int, pageSize: Int = 10): [Group]
   activity(id: Int!): Activity
+  activities(page: Int, pageSize: Int = 10): [Activity]
   advertiser(id: Int!): Advertiser
+  advertisers(page: Int, pageSize: Int = 10): [Advertiser]
   location(id: Int!): Location
-  activities: [Activity]
-  events: [Event]
-  advertisers: [Advertiser]
-  locations: [Location]
+  locations(page: Int, pageSize: Int = 10): [Location]
+  event(id: Int!): Event
+  events(page: Int, pageSize: Int = 10): [Event]
   plan(id: Int!): Plan
-  plans: [Plan]
-}
-
-type Group {
-  groupId: Int!
-  name: String!
-  members: [AppUser]
+  plans(page: Int, pageSize: Int = 10): [Plan]
+  category(id: Int!): Category
+  categories(page: Int, pageSize: Int = 10): [Category]
 }
 
 type AppUser {
@@ -43,27 +39,31 @@ type AppUser {
   setupMode: Boolean!
   schedules: [UserSchedule]
   groups: [Group]
+  activities: [Activity]
+  categories: [Activity]
+  recurringSchedules: [UserRecurringSchedule]
 }
 
 type UserSchedule {
   userScheduleId: Int!
-  name: String!
+  appUserId: Int!
   startUtc: UtcMoment!
   endUtc: UtcMoment!
   startLocal: Moment!
   endLocal: Moment!
+  timeName: String!
+  isAvailable: String!
+  recurringScheduleId: Int!
 }
 
 scalar UtcMoment
 
 scalar Moment
 
-type Event {
-  eventId: Int!
-  datetimeUtc: UtcMoment!
-  activity: Activity
-  advertiser: Advertiser
-  location: Location
+type Group {
+  groupId: Int!
+  name: String!
+  members: [AppUser!]!
 }
 
 type Activity {
@@ -71,6 +71,24 @@ type Activity {
   name: String!
   durationInMinutes: Int
   events: [Event]
+  users: [AppUser]
+}
+
+type Event {
+  eventId: Int!
+  datetimeUtc: UtcMoment!
+}
+
+type UserRecurringSchedule {
+  userRecurringScheduleId: Int!
+  appUserId: Int!
+  weekDay: Int!
+  imageUrl: String!
+  hourStart: Int!
+  durationInHours: Int!
+  weekDayDisplay: String!
+  startTimeDisplay: String!
+  endTimeDisplay: String!
 }
 
 type Advertiser {
@@ -92,17 +110,34 @@ type Plan {
   attendees: [AppUser]
 }
 
-type mutation {
-  addUser(firstName: String!, email: String!): AppUser
-  updateUserSchedule(appUserId: Int!, schedules: [ScheduleInput!]!): AppUser
-  addGroup(name: String!, members: [String!]!): Group
-  addGroupMembers(id: Int!, members: [String!]!): Group
-  addActivity(name: String!, durationInMinutes: Int): Activity
-  addEvent(datetimeUtc: UtcMoment!): Event
+type Category {
+  categoryId: Int!
+  parentId: Int!
+  name: String!
+  users: [AppUser]
 }
 
-input ScheduleInput {
-  name: String!
-  startUtc: UtcMoment!
-  endUtc: UtcMoment!
+type mutation {
+  updateUserRecurringSchedules(
+    appUserId: Int!
+    schedules: [UserRecurringScheduleInput!]!
+  ): [UserRecurringSchedule!]!
+  updateUserSchedules(
+    appUserId: Int!
+    schedules: [UserScheduleInput!]!
+  ): [UserSchedule!]!
+}
+
+input UserRecurringScheduleInput {
+  weekDay: Int!
+  imageUrl: String!
+  hourStart: Int!
+  durationInHours: Int!
+}
+
+input UserScheduleInput {
+  startLocal: Moment!
+  endLocal: Moment!
+  timeName: String!
+  isAvailable: Boolean!
 }

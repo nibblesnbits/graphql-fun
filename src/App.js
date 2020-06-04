@@ -3,21 +3,23 @@ import { QueryRenderer } from "react-relay";
 import { graphql } from "babel-plugin-relay/macro";
 import environment from "./relay-environment";
 
+const groupsQuery = graphql`
+  query AppQuery {
+    groups {
+      name
+      members {
+        firstName
+      }
+    }
+  }
+`;
+
 export default class App extends React.Component {
   render() {
     return (
       <QueryRenderer
         environment={environment}
-        query={graphql`
-          query AppQuery {
-            groups {
-              name
-              members {
-                firstName
-              }
-            }
-          }
-        `}
+        query={groupsQuery}
         variables={{}}
         render={({ error, props }) => {
           if (error) {
