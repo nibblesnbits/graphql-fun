@@ -105,7 +105,7 @@ export default createPaginationContainer(
       ) {
         user(id: $id) {
           ...UserGroups_user
-          # @arguments(count: $count, cursor: $cursor, orderBy: $orderBy)
+            @arguments(count: $count, cursor: $cursor, orderBy: $orderBy)
         }
       }
     `,
