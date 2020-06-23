@@ -1,7 +1,8 @@
 import Route from "found/Route";
 import makeRouteConfig from "found/makeRouteConfig";
 import React from "react";
-import { graphql } from "babel-plugin-relay/macro";
+import { graphql } from "react-relay";
+// import { graphql } from "babel-plugin-relay/macro";
 import App from "./App";
 import AppUser from "./components/AppUser";
 import UserGroups from "./components/UserGroups";

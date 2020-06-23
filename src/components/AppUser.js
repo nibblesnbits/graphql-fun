@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { ReactRelayContext, createFragmentContainer } from "react-relay";
-import { graphql } from "babel-plugin-relay/macro";
+import { graphql } from "react-relay";
+// import { graphql } from "babel-plugin-relay/macro";
 import UserGroups from "./UserGroups";
 
 const propTypes = {

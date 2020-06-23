@@ -42,9 +42,9 @@ type AppUser {
   schedules(from: DateTime, to: DateTime): [UserSchedule]
   groups(
     first: Int
-    after: String
+    after: ID
     last: Int
-    before: String
+    before: ID
     orderBy: String = "groupId"
     orderDirection: OrderDirection = Asc
   ): GroupConnection
@@ -84,46 +84,28 @@ type Group {
   name: String!
   members(
     first: Int
-    after: String
+    after: ID
     last: Int
-    before: String
+    before: ID
     orderBy: String = "appUserId"
     orderDirection: OrderDirection = Asc
-  ): GroupAppUserConnection
+  ): AppUserConnection
 }
 
-type GroupAppUserConnection {
+type AppUserConnection {
   totalCount: Int!
-  edges: [GroupAppUserConnectionEdge!]
+  edges: [AppUserConnectionEdge!]
   pageInfo: PageInfo!
 }
 
-type GroupAppUserConnectionEdge {
-  node: GroupAppUser!
+type AppUserConnectionEdge {
+  node: AppUser!
   cursor: String!
 }
 
-type GroupAppUser {
-  appUserId: Int!
-  firstName: String!
-  lastName: String!
-  picUrl: String!
-  birthday: String!
-  gender: Int!
-  phone: String!
-  email: String!
-  frequency: Int!
-  budgetPerMonth: String!
-  budgetPerActivity: String!
-  country: String!
-  timezone: String!
-  isBanned: Boolean!
-  setupMode: Boolean!
-}
-
 type PageInfo {
-  endCursor: String
-  startCursor: String
+  endCursor: ID
+  startCursor: ID
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
 }
