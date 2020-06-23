@@ -5,21 +5,22 @@ schema {
 
 type RootQueryType {
   user(id: Int!): AppUser
-  users(page: Int, pageSize: Int = 10): [AppUser]
+  users(page: Int = 0, pageSize: Int = 10): [AppUser]
   group(id: Int!): Group
-  groups(page: Int, pageSize: Int = 10): [Group]
+  groups(page: Int = 0, pageSize: Int = 10): [Group]
   activity(id: Int!): Activity
-  activities(page: Int, pageSize: Int = 10): [Activity]
+  activities(page: Int = 0, pageSize: Int = 10): [Activity]
   advertiser(id: Int!): Advertiser
-  advertisers(page: Int, pageSize: Int = 10): [Advertiser]
+  advertisers(page: Int = 0, pageSize: Int = 10): [Advertiser]
   location(id: Int!): Location
-  locations(page: Int, pageSize: Int = 10): [Location]
+  locations(page: Int = 0, pageSize: Int = 10): [Location]
   event(id: Int!): Event
-  events(page: Int, pageSize: Int = 10): [Event]
+  events(page: Int = 0, pageSize: Int = 10): [Event]
   plan(id: Int!): Plan
-  plans(page: Int, pageSize: Int = 10): [Plan]
+  planSet(id: String!): [Plan]
+  plans(page: Int = 0, pageSize: Int = 10): [Plan]
   category(id: Int!): Category
-  categories(page: Int, pageSize: Int = 10): [Category]
+  categories(page: Int = 0, pageSize: Int = 10): [Category]
 }
 
 type AppUser {
@@ -32,38 +33,37 @@ type AppUser {
   phone: String!
   email: String!
   frequency: Int!
-  budget: String!
+  budgetPerMonth: String!
+  budgetPerActivity: String!
   country: String!
   timezone: String!
   isBanned: Boolean!
   setupMode: Boolean!
-  schedules: [UserSchedule]
-  groups: [Group]
+  schedules(from: DateTime, to: DateTime): [UserSchedule]
+  groups: [AppUserGroup]
   activities: [Activity]
-  categories: [Activity]
+  categories(status: Boolean = true): [Category]
   recurringSchedules: [UserRecurringSchedule]
+  plans(from: DateTime, to: DateTime): [Plan]
 }
 
 type UserSchedule {
   userScheduleId: Int!
   appUserId: Int!
-  startUtc: UtcMoment!
-  endUtc: UtcMoment!
-  startLocal: Moment!
-  endLocal: Moment!
+  startUtc: DateTime!
+  endUtc: DateTime!
   timeName: String!
   isAvailable: String!
   recurringScheduleId: Int!
+  startLocal: DateTime!
+  endLocal: DateTime!
 }
 
-scalar UtcMoment
+scalar DateTime
 
-scalar Moment
-
-type Group {
+type AppUserGroup {
   groupId: Int!
   name: String!
-  members: [AppUser!]!
 }
 
 type Activity {
@@ -76,7 +76,41 @@ type Activity {
 
 type Event {
   eventId: Int!
-  datetimeUtc: UtcMoment!
+  datetimeUtc: DateTime!
+  location: Location!
+  advertiser: Advertiser!
+  activity: Activity!
+  attendance: [Attendance]
+}
+
+type Location {
+  locationId: Int!
+  name: String!
+  address: String!
+  events: [Event]
+}
+
+type Advertiser {
+  advertiserId: Int!
+  name: String!
+  email: String!
+  events: [Event]
+}
+
+type Attendance {
+  attendanceId: Int!
+  appUserId: Int!
+  eventId: Int!
+  attended: Boolean!
+  rating: Int!
+  attendee: AppUser!
+}
+
+type Category {
+  categoryId: Int!
+  parentId: Int!
+  name: String!
+  users: [AppUser]
 }
 
 type UserRecurringSchedule {
@@ -91,33 +125,87 @@ type UserRecurringSchedule {
   endTimeDisplay: String!
 }
 
-type Advertiser {
-  advertiserId: Int!
-  name: String!
-  email: String!
-  events: [Event]
-}
-
-type Location {
-  locationId: Int!
-  name: String!
-  address: String!
-  events: [Event]
-}
-
 type Plan {
+  planId: Int!
+  eventId: Int!
+  appUserId: Int!
+  groupId: Int!
   planSetId: String!
+  videoChatUrl: String
   attendees: [AppUser]
+  event: Event!
+  group: Group!
 }
 
-type Category {
-  categoryId: Int!
-  parentId: Int!
+type Group {
+  groupId: Int!
   name: String!
-  users: [AppUser]
+  members(
+    first: Int = 10
+    after: String
+    last: Int
+    before: String
+    orderBy: String
+    orderDirection: OrderDirection = Asc
+  ): GroupAppUserConnection
+}
+
+type GroupAppUserConnection {
+  totalCount: Int!
+  edges: [GroupAppUserConnectionEdge!]
+  pageInfo: GroupAppUserPageInfo!
+}
+
+type GroupAppUserConnectionEdge {
+  node: GroupAppUser!
+  cursor: String!
+}
+
+type GroupAppUser {
+  appUserId: Int!
+  firstName: String!
+  lastName: String!
+  picUrl: String!
+  birthday: String!
+  gender: Int!
+  phone: String!
+  email: String!
+  frequency: Int!
+  budgetPerMonth: String!
+  budgetPerActivity: String!
+  country: String!
+  timezone: String!
+  isBanned: Boolean!
+  setupMode: Boolean!
+}
+
+type GroupAppUserPageInfo {
+  endCursor: String!
+  startCursor: String!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+enum OrderDirection {
+  Asc
+  Desc
 }
 
 type mutation {
+  updateUserData(
+    appUserId: Int!
+    firstName: String!
+    lastName: String!
+    picUrl: String!
+    birthday: String!
+    gender: Int!
+    phone: String!
+    email: String!
+    frequency: Int!
+    budget: String!
+    country: String!
+    timezone: String!
+  ): AppUser
   updateUserRecurringSchedules(
     appUserId: Int!
     schedules: [UserRecurringScheduleInput!]!
@@ -132,12 +220,12 @@ input UserRecurringScheduleInput {
   weekDay: Int!
   imageUrl: String!
   hourStart: Int!
-  durationInHours: Int!
+  hourEnd: Int!
 }
 
 input UserScheduleInput {
-  startLocal: Moment!
-  endLocal: Moment!
+  startLocal: DateTime!
+  endLocal: DateTime!
   timeName: String!
   isAvailable: Boolean!
 }
