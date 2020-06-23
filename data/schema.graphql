@@ -141,11 +141,11 @@ type Group {
   groupId: Int!
   name: String!
   members(
-    first: Int = 10
+    first: Int
     after: String
     last: Int
     before: String
-    orderBy: String
+    orderBy: String = "appUserId"
     orderDirection: OrderDirection = Asc
   ): GroupAppUserConnection
 }
@@ -153,7 +153,7 @@ type Group {
 type GroupAppUserConnection {
   totalCount: Int!
   edges: [GroupAppUserConnectionEdge!]
-  pageInfo: GroupAppUserPageInfo!
+  pageInfo: PageInfo!
 }
 
 type GroupAppUserConnectionEdge {
@@ -179,9 +179,9 @@ type GroupAppUser {
   setupMode: Boolean!
 }
 
-type GroupAppUserPageInfo {
-  endCursor: String!
-  startCursor: String!
+type PageInfo {
+  endCursor: String
+  startCursor: String
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
 }
