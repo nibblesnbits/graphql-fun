@@ -4,7 +4,7 @@ import { createFragmentContainer, graphql } from "react-relay";
 // import { graphql } from "babel-plugin-relay/macro";
 
 const propTypes = {
-  user: PropTypes.object.isRequired,
+  appUser: PropTypes.object.isRequired,
   children: PropTypes.node.isRequired,
   relay: PropTypes.object.isRequired,
 };

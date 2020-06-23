@@ -3,7 +3,7 @@ import React from "react";
 import { ReactRelayContext, createPaginationContainer } from "react-relay";
 import { graphql } from "react-relay";
 // import { graphql } from "babel-plugin-relay/macro";
-import Group from "./Group";
+// import Group from "./Group";
 
 const propTypes = {
   user: PropTypes.object.isRequired,
@@ -26,7 +26,7 @@ class UserGroups extends React.Component {
 
   render() {
     const {
-      user: { groups },
+      groupUser: { groups },
     } = this.props;
     const hasMore = this.props.relay.hasMore();
 
@@ -39,8 +39,8 @@ class UserGroups extends React.Component {
         <p>{groups.totalCount} groups</p>
         <ul className="group-list">
           {groups.edges.map(({ node: group }) => (
-            // <div key={group.groupId}>{group.name}</div>
-            <Group key={group.groupId} group={group} />
+            <div key={group.groupId}>{group.name}</div>
+            // <Group key={group.groupId} group={group} />
           ))}
         </ul>
         <button disabled={!hasMore} onPress={() => this._loadMore()}>
@@ -68,7 +68,9 @@ export default createPaginationContainer(
           @connection(key: "UserGroups_groups") {
           edges {
             node {
-              ...Group_group
+              groupId
+              name
+              # ...Group_group
             }
           }
         }
@@ -103,7 +105,7 @@ export default createPaginationContainer(
       ) {
         user(id: $id) {
           ...UserGroups_user
-            @arguments(count: $count, cursor: $cursor, orderBy: $orderBy)
+          # @arguments(count: $count, cursor: $cursor, orderBy: $orderBy)
         }
       }
     `,
